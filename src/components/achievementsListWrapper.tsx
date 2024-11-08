@@ -8,6 +8,7 @@ import { updateAchievementsCache } from "../functions/updateAchievementsCache";
 import { updateAppAchievementsCounters } from "../functions/updateAppAchievementsCounters";
 import { callable } from "@decky/api";
 import { Achievements } from "../modules/achievements";
+import confirm from "../functions/confirm";
 
 export default function AchievementsListWrapper(props: { appId: number; children: ReactElement }) {
   const mounted = useIsMounted();
@@ -38,6 +39,10 @@ export default function AchievementsListWrapper(props: { appId: number; children
   };
 
   const unlock = async (achievement: SteamAppAchievement) => {
+    const confirmed = confirm('Are you sure want to unlock the achievement? This action cannot be undone', 'Unlock');
+
+    if (!confirmed) return;
+
     const callApi = callable<[app_id: string, achievement_name: string], string>("unlock");
     await callApi(`${props.appId}`, achievement.strID);
   };

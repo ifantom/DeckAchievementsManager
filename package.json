@@ -1,7 +1,7 @@
 {
   "name": "deck-achievements-manager",
   "version": "1.0.0",
-  "description": "A template to quickly create decky plugins from scratch, based on TypeScript and webpack",
+  "description": "Get full control over your achievements on Steam Deck. Unlock broken ones, fix glitched stats or mark undesirable achievements as ignored to make Steam think they don't exist.",
   "type": "module",
   "scripts": {
     "build": "rollup -c",
@@ -10,21 +10,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SteamDeckHomebrew/decky-plugin-template.git"
+    "url": "git+https://github.com/ifantom/DeckAchievementsManager.git"
   },
   "keywords": [
-    "decky",
-    "plugin",
-    "plugin-template",
     "steam-deck",
-    "deck"
+    "decky-loader",
+    "plugin",
+    "achievements",
+    "manager"
   ],
-  "author": "You <you@you.tld>",
-  "license": "BSD-3-Clause",
+  "author": "Vlad S. (ifantom) <ifantom.group@gmail.com>",
+  "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/SteamDeckHomebrew/decky-plugin-template/issues"
+    "url": "https://github.com/ifantom/DeckAchievementsManager/issues"
   },
-  "homepage": "https://github.com/SteamDeckHomebrew/decky-plugin-template#readme",
+  "homepage": "https://github.com/ifantom/DeckAchievementsManager#readme",
   "devDependencies": {
     "@decky/rollup": "^1.0.1",
     "@decky/ui": "^4.8.1",

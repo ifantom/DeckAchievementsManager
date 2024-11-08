@@ -13,7 +13,6 @@ import patchGetAchievements from "./patches/patchGetAchievements";
 import Content from "./components/content";
 
 // TODO: i18n
-// TODO: flags: [DEBUG]
 const STORAGE_KEY = "achievements-manager-db";
 localforage.config({ name: STORAGE_KEY });
 

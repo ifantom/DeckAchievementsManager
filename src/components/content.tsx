@@ -1,28 +1,19 @@
 import { useState } from "react";
-import { ButtonItem, ConfirmModal, PanelSection, PanelSectionRow, showModal, Spinner } from "@decky/ui";
+import { ButtonItem, PanelSection, PanelSectionRow, Spinner } from "@decky/ui";
 import { getAchievementsCountersIndex } from "../functions/getAchievementsCountersIndex";
 import { Achievements } from "../modules/achievements";
 import localforage from "localforage";
 import { showToast } from "../functions/showToast";
 import { getIgnoredAchievementIds } from "../functions/getIgnoredAchievementIds";
 import { updateAchievementsCache } from "../functions/updateAchievementsCache";
+import confirm from "../functions/confirm";
 
 export default function Content() {
   const [resetting, setResetting] = useState(false);
   const [recalculating, setRecalculating] = useState(false);
 
   const reset = async () => {
-    const confirmed = await new Promise((resolve) => {
-      showModal(
-        <ConfirmModal
-          strTitle="Achievements Manager"
-          strDescription="Are you sure want to reset all changes?"
-          strOKButtonText="Reset"
-          onOK={() => resolve(true)}
-          onCancel={() => resolve(false)}
-        />,
-      );
-    });
+    const confirmed = confirm("Are you sure want to reset all changes?", "Reset");
 
     if (!confirmed) {
       return;
@@ -47,22 +38,6 @@ export default function Content() {
   };
 
   const recalculate = async () => {
-    const confirmed = await new Promise((resolve) => {
-      showModal(
-        <ConfirmModal
-          strTitle="Achievements Manager"
-          strDescription="Are you sure want to recalculate cache?"
-          strOKButtonText="Recalculate"
-          onOK={() => resolve(true)}
-          onCancel={() => resolve(false)}
-        />,
-      );
-    });
-
-    if (!confirmed) {
-      return;
-    }
-
     const index = await getAchievementsCountersIndex();
     const appIds = Object.keys(index).map(Number);
 
