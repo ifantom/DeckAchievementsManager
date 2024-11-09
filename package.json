@@ -1,7 +1,7 @@
 {
   "name": "deck-achievements-manager",
   "version": "1.0.0",
-  "description": "Get full control over your achievements on Steam Deck. Unlock broken ones, fix glitched stats or mark undesirable achievements as ignored to make Steam think they don't exist.",
+  "description": "Get control over your achievements on Steam Deck. Mark undesirable achievements as ignored to make Steam think they don't exist.",
   "type": "module",
   "scripts": {
     "build": "rollup -c",

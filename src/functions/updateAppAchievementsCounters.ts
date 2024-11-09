@@ -6,8 +6,8 @@ export async function updateAppAchievementsCounters(appId: number, diff: AppAchi
   const index = await getAchievementsCountersIndex();
   const counters = index[appId] ?? { ...EMPTY_ACHIEVEMENTS_COUNTERS };
 
-  counters.achieved += diff.achieved;
-  counters.unachieved += diff.unachieved;
+  counters.iAchieved += diff.iAchieved;
+  counters.iUnachieved += diff.iUnachieved;
 
   index[appId] = counters;
 

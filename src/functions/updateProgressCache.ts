@@ -8,8 +8,8 @@ export function updateProgressCache(appId: number, counters: AppAchievementsCoun
   const progress = appAchievementProgressCache.m_achievementProgress?.mapCache?.get(appId);
 
   if (progress) {
-    const total = progress.total - counters.achieved - counters.unachieved;
-    const unlocked = progress.unlocked - counters.achieved;
+    const total = progress.total - counters.iAchieved - counters.iUnachieved;
+    const unlocked = progress.unlocked - counters.iAchieved;
 
     appAchievementProgressCache.m_achievementProgress.mapCache.set(`f${appId}`, {
       ...progress,

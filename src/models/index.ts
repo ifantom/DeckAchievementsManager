@@ -19,13 +19,13 @@ export interface AchievementsCacheData {
 }
 
 export interface AppAchievementsCounters {
-  achieved: number;
-  unachieved: number;
+  iAchieved: number;
+  iUnachieved: number;
 }
 
 export type AchievementsCountersIndex = Record<number, AppAchievementsCounters>;
 
-export const EMPTY_ACHIEVEMENTS_COUNTERS = { achieved: 0, unachieved: 0 };
+export const EMPTY_ACHIEVEMENTS_COUNTERS: AppAchievementsCounters = { iAchieved: 0, iUnachieved: 0 };
 
 export interface SteamAppAchievement {
   strID: string;

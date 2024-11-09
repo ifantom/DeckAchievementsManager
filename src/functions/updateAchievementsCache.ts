@@ -22,13 +22,13 @@ export function updateAchievementsCache(appId: number, ignored: Set<SteamAppAchi
 
   ignored.forEach((id): boolean | void => {
     if (filteredAchievements.achieved[id]) {
-      counters.achieved++;
+      counters.iAchieved++;
       ignoredAchievements.achieved[id] = filteredAchievements.achieved[id];
       return delete filteredAchievements.achieved[id];
     }
 
     if (filteredAchievements.unachieved[id]) {
-      counters.unachieved++;
+      counters.iUnachieved++;
       ignoredAchievements.unachieved[id] = filteredAchievements.unachieved[id];
       return delete filteredAchievements.unachieved[id];
     }

@@ -5,7 +5,7 @@
   "api_version": 1,
   "publish": {
     "tags": ["achievements", "manager", "unlock"],
-    "description": "Get full control over your achievements. Unlock broken ones, fix glitched stats or mark undesirable achievements as ignored to make Steam think they don't exist. Personally, I've created it to ignore stupid multiplayer achievements in singleplayer games...",
+    "description": "Get control over your achievements. Mark undesirable achievements as ignored to make Steam think they don't exist. Personally, I use it to ignore stupid multiplayer achievements in singleplayer games...",
     "image": "https://raw.githubusercontent.com/ifantom/DeckAchievementsManager/main/assets/thumbnail.jpg"
   }
 }

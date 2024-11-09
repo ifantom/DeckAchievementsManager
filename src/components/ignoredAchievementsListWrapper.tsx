@@ -34,7 +34,7 @@ export default function IgnoredAchievementsListWrapper(props: { appId: number; c
 
   const reconsider = async (achievement: SteamAppAchievement) => {
     reconsidered.add(achievement.strID);
-    counters[achievement.bAchieved ? "achieved" : "unachieved"]--;
+    counters[achievement.bAchieved ? "iAchieved" : "iUnachieved"]--;
 
     setReconsidered(new Set(reconsidered));
     setCounters({ ...counters });
