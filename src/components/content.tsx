@@ -13,7 +13,7 @@ export default function Content() {
   const [recalculating, setRecalculating] = useState(false);
 
   const reset = async () => {
-    const confirmed = confirm("Are you sure want to reset all changes?", "Reset");
+    const confirmed = await confirm("Are you sure want to reset all changes?", "Reset");
 
     if (!confirmed) {
       return;
