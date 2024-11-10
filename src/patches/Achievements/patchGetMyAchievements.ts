@@ -1,5 +1,5 @@
 import { beforePatch } from "@decky/ui";
-import { Achievements } from "../modules/achievements";
+import { Achievements } from "../../modules/achievements";
 
 export default function patchGetMyAchievements() {
   return beforePatch(Achievements.__proto__, "GetMyAchievements", (args: Array<number | string | unknown>) => {

@@ -2,15 +2,14 @@ import { staticClasses } from "@decky/ui";
 import { definePlugin, routerHook } from "@decky/api";
 import { FaTrophy } from "react-icons/fa";
 import * as localforage from "localforage";
-import patchLoadMyAchievements from "./patches/patchLoadMyAchievements";
-import patchGetMyAchievements from "./patches/patchGetMyAchievements";
+import patchLoadMyAchievements from "./patches/Achievements/patchLoadMyAchievements";
+import patchGetMyAchievements from "./patches/Achievements/patchGetMyAchievements";
 import patchAchievementsPage from "./patches/patchAchievementsPage";
-import patchGetAchievementProgress from "./patches/patchGetAchievementProgress";
-import { AchievementProgressCache } from "./models";
-import patchLoadCacheFile from "./patches/patchLoadCacheFile";
-import patchRequestCacheUpdate from "./patches/patchRequestCacheUpdate";
-import patchGetAchievements from "./patches/patchGetAchievements";
+import patchGetAchievementProgress from "./patches/appAchievementProgressCache/patchGetAchievementProgress";
+import { SteamAchievementProgressCache } from "./models";
+import patchGetAchievements from "./patches/appDetailsStore/patchGetAchievements";
 import Content from "./components/content";
+import AchievementsManagerCache from "./AchievementsManagerCache";
 
 // TODO: i18n
 const STORAGE_KEY = "achievements-manager-db";
@@ -19,8 +18,9 @@ localforage.config({ name: STORAGE_KEY });
 declare global {
   let appAchievementProgressCache: {
     m_mapQueuedCacheMisses: Map<number, boolean>;
-    m_achievementProgress?: { mapCache?: Map<number | string, AchievementProgressCache> };
+    m_achievementProgress?: { mapCache?: Map<number | string, SteamAchievementProgressCache> };
     GetAchievementProgress: (appId: number) => number;
+    SaveCacheFile: () => Promise<void>;
     __proto__: any;
   };
 
@@ -32,15 +32,18 @@ declare global {
 }
 
 export default definePlugin(() => {
+  const cache = new AchievementsManagerCache();
+
+  console.time("Achievements Manager cache has been loaded: ");
+  cache.load().then(() => console.timeEnd("Achievements Manager cache has been loaded: "));
+
   const patches = {
     appAchievementProgressCache: {
-      LoadCacheFile: patchLoadCacheFile(),
-      RequestCacheUpdate: patchRequestCacheUpdate(),
-      GetAchievementProgress: patchGetAchievementProgress(),
+      GetAchievementProgress: patchGetAchievementProgress(cache),
     },
 
     Achievements: {
-      LoadMyAchievements: patchLoadMyAchievements(),
+      LoadMyAchievements: patchLoadMyAchievements(cache),
       GetMyAchievements: patchGetMyAchievements(),
     },
 
@@ -49,12 +52,12 @@ export default definePlugin(() => {
     },
   };
 
-  const achievementsPagePatch = patchAchievementsPage();
+  const achievementsPagePatch = patchAchievementsPage(cache);
 
   return {
     name: "Achievements Manager",
     titleView: <div className={staticClasses.Title}>Achievements Manager</div>,
-    content: <Content />,
+    content: <Content cache={cache} />,
     icon: <FaTrophy />,
     onDismount() {
       Object.values(patches).forEach((source) => {

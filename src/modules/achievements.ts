@@ -1,5 +1,5 @@
 import { findModuleChild } from "@decky/ui";
-import { AchievementsCache } from "../models";
+import { SteamAchievementsCache } from "../models";
 
 export const Achievements: IAchievements = findModuleChild((module) => {
   if (typeof module !== "object") return undefined;
@@ -9,6 +9,6 @@ export const Achievements: IAchievements = findModuleChild((module) => {
 });
 
 interface IAchievements {
-  m_mapMyAchievements: Map<number | string, AchievementsCache>;
+  m_mapMyAchievements: Map<number | string, SteamAchievementsCache>;
   __proto__: unknown;
 }

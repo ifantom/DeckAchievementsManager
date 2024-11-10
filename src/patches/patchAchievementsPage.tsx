@@ -5,6 +5,7 @@ import AchievementsHeaderWrapper from "../components/achievementsHeaderWrapper";
 import AchievementsListWrapper from "../components/achievementsListWrapper";
 import IgnoredAchievementsListWrapper from "../components/ignoredAchievementsListWrapper";
 import { AchievementsPageContextProvider } from "../components/achievementsPageContextProvider";
+import AchievementsManagerCache from "../AchievementsManagerCache";
 
 declare global {
   let navigation: { currentEntry: { url: string } };
@@ -18,7 +19,7 @@ class ManualRouter {
   }
 }
 
-export default function patchAchievementsPage() {
+export default function patchAchievementsPage(cache: AchievementsManagerCache) {
   return routerHook.addPatch("/library/app/:appid/achievements", () => {
     // @ts-ignore
     const childrenFn: Function = (routerHook.toReplace as Map<string, unknown>).get("/library/app/:appid/achievements");
@@ -28,9 +29,12 @@ export default function patchAchievementsPage() {
       const appId: number = ret1.props.appid;
 
       afterPatch(ret1, "type", (_, ret2: ReactElement) => {
-        const mine = ret2.props.children.props.children[1].props.children.props.children[0];
+        const myAchievementsPage = ret2.props.children?.props.children?.[1]?.props.children?.props.children?.[0];
+        if (!myAchievementsPage) return ret2;
 
-        afterPatch(mine.props.children, "type", (_, ret3: ReactElement) => {
+        afterPatch(myAchievementsPage.props.children, "type", (_, ret3: ReactElement) => {
+          if (!ret3.props.children) return ret3;
+
           ret3.props.children[0].props.children = (
             <AchievementsHeaderWrapper>{ret3.props.children[0].props.children}</AchievementsHeaderWrapper>
           );
@@ -59,7 +63,9 @@ export default function patchAchievementsPage() {
             ret4.props.children.splice(
               1,
               2,
-              <AchievementsListWrapper appId={appId}>{ret4.props.children[1]}</AchievementsListWrapper>,
+              <AchievementsListWrapper appId={appId} cache={cache}>
+                {ret4.props.children[1]}
+              </AchievementsListWrapper>,
             );
 
             return ret4;
@@ -69,7 +75,9 @@ export default function patchAchievementsPage() {
             ret4.props.children.splice(
               1,
               2,
-              <IgnoredAchievementsListWrapper appId={appId}>{ret4.props.children[1]}</IgnoredAchievementsListWrapper>,
+              <IgnoredAchievementsListWrapper appId={appId} cache={cache}>
+                {ret4.props.children[1]}
+              </IgnoredAchievementsListWrapper>,
             );
 
             return ret4;

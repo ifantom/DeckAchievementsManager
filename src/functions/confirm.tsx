@@ -1,6 +1,6 @@
 import { ConfirmModal, showModal } from "@decky/ui";
 
-export default function confirm(text: string, action: string): Promise<boolean> {
+export function confirm(text: string, action: string): Promise<boolean> {
   return new Promise((resolve) => {
     showModal(
       <ConfirmModal

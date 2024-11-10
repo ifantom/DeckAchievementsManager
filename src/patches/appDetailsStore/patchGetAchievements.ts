@@ -1,6 +1,6 @@
 import { afterPatch } from "@decky/ui";
-import { SteamAppAchievements } from "../models";
-import { Achievements } from "../modules/achievements";
+import { SteamAppAchievements } from "../../models";
+import { Achievements } from "../../modules/achievements";
 
 export default function patchGetAchievements() {
   return afterPatch(appDetailsStore.__proto__, "GetAchievements", ([appId]: number[], result: SteamAppAchievements) => {

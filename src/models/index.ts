@@ -1,33 +1,14 @@
-export interface AchievementsCache {
-  data: AchievementsCacheData;
+export interface SteamAchievementsCache {
+  data: SteamAchievementsCacheData;
 }
 
-export interface AchievementProgressCache {
-  all_unlocked: boolean;
-  appid: number;
-  cache_time: number;
-  percentage: number;
-  total: number;
-  unlocked: number;
-  vetted: boolean;
+export interface SteamAchievementsCacheData {
+  achieved: Record<string, SteamAchievement>;
+  unachieved: Record<string, SteamAchievement>;
+  hidden: Record<string, SteamAchievement>;
 }
 
-export interface AchievementsCacheData {
-  achieved: Record<string, SteamAppAchievement>;
-  unachieved: Record<string, SteamAppAchievement>;
-  hidden: Record<string, SteamAppAchievement>;
-}
-
-export interface AppAchievementsCounters {
-  iAchieved: number;
-  iUnachieved: number;
-}
-
-export type AchievementsCountersIndex = Record<number, AppAchievementsCounters>;
-
-export const EMPTY_ACHIEVEMENTS_COUNTERS: AppAchievementsCounters = { iAchieved: 0, iUnachieved: 0 };
-
-export interface SteamAppAchievement {
+export interface SteamAchievement {
   strID: string;
   strName: string;
   strDescription: string;
@@ -42,9 +23,30 @@ export interface SteamAppAchievement {
 }
 
 export interface SteamAppAchievements {
-  nAchieved: number
-  nTotal: number
-  vecAchievedHidden: SteamAppAchievement[]
-  vecHighlight: SteamAppAchievement[]
-  vecUnachieved: SteamAppAchievement[]
+  nAchieved: number;
+  nTotal: number;
+  vecAchievedHidden: SteamAchievement[];
+  vecHighlight: SteamAchievement[];
+  vecUnachieved: SteamAchievement[];
 }
+
+export interface SteamAchievementProgressCache {
+  all_unlocked: boolean;
+  appid: number;
+  cache_time: number;
+  percentage: number;
+  total: number;
+  unlocked: number;
+  vetted: boolean;
+}
+
+export interface AppAchievementsCounters {
+  achieved: number;
+  total: number;
+}
+
+export const EMPTY_ACHIEVEMENTS_COUNTERS: AppAchievementsCounters = { achieved: 0, total: 0 };
+
+
+
+

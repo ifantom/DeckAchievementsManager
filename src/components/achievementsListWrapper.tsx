@@ -1,42 +1,49 @@
 import { cloneElement, ReactElement, useContext, useEffect, useState } from "react";
 import { Focusable, Menu, MenuItem, showContextMenu } from "@decky/ui";
-import { EMPTY_ACHIEVEMENTS_COUNTERS, SteamAppAchievement } from "../models";
+import { EMPTY_ACHIEVEMENTS_COUNTERS, SteamAchievement } from "../models";
 import useIsMounted from "../hooks/useIsMounted";
 import { AchievementsPageContext } from "./achievementsPageContextProvider";
-import { addIgnoredAchievementIds } from "../functions/addIgnoredAchievementIds";
-import { updateAchievementsCache } from "../functions/updateAchievementsCache";
-import { updateAppAchievementsCounters } from "../functions/updateAppAchievementsCounters";
+import { updateSteamAchievementsCache } from "../functions";
 import { Achievements } from "../modules/achievements";
+import AchievementsManagerCache from "../AchievementsManagerCache";
 
-export default function AchievementsListWrapper(props: { appId: number; children: ReactElement }) {
+export default function AchievementsListWrapper(props: {
+  appId: number;
+  cache: AchievementsManagerCache;
+  children: ReactElement;
+}) {
   const mounted = useIsMounted();
-  const [ignored, setIgnored] = useState(new Set<SteamAppAchievement["strID"]>());
-  const { counters, setCounters } = useContext(AchievementsPageContext);
+  const [ignored, setIgnored] = useState(new Set<SteamAchievement["strID"]>());
+  const { countersDiff, setCountersDiff } = useContext(AchievementsPageContext);
 
   useEffect(() => {
     return () => {
-      if (mounted() || !ignored.size) {
-        return;
+      if (mounted() || !ignored.size) return;
+
+      setCountersDiff({ ...EMPTY_ACHIEVEMENTS_COUNTERS });
+
+      const allIgnored = props.cache.addAppIgnored(props.appId, ignored);
+      const calculatedCounters = updateSteamAchievementsCache(props.appId, allIgnored);
+
+      if (calculatedCounters) {
+        props.cache.counters.set(props.appId, calculatedCounters);
       }
 
-      updateAppAchievementsCounters(props.appId, counters).then();
-      addIgnoredAchievementIds(props.appId, ignored).then((allIgnored) => {
-        updateAchievementsCache(props.appId, allIgnored);
-
-        setCounters({ ...EMPTY_ACHIEVEMENTS_COUNTERS });
-      });
+      props.cache.save();
     };
   }, [mounted]);
 
-  const ignore = async (achievement: SteamAppAchievement) => {
+  const ignore = async (achievement: SteamAchievement) => {
     ignored.add(achievement.strID);
-    counters[achievement.bAchieved ? "iAchieved" : "iUnachieved"]++;
+
+    countersDiff.total--;
+    if (achievement.bAchieved) countersDiff.achieved--;
 
     setIgnored(new Set(ignored));
-    setCounters({ ...counters });
+    setCountersDiff({ ...countersDiff });
   };
 
-  const handleClick = (achievement: SteamAppAchievement) => {
+  const handleClick = (achievement: SteamAchievement) => {
     showContextMenu(
       <Menu label={achievement.strName}>
         <MenuItem onSelected={() => ignore(achievement)}>Ignore</MenuItem>
@@ -60,9 +67,9 @@ export default function AchievementsListWrapper(props: { appId: number; children
 
   return cloneElement(props.children, {
     ...props.children.props,
-    rgAchieved: props.children.props.rgAchieved.filter(({ strID }: SteamAppAchievement) => !ignored.has(strID)),
-    rgUnachieved: rgUnachieved.filter(({ strID }: SteamAppAchievement) => !ignored.has(strID)),
-    fnRenderAchievement: (achievement: SteamAppAchievement) => {
+    rgAchieved: props.children.props.rgAchieved.filter(({ strID }: SteamAchievement) => !ignored.has(strID)),
+    rgUnachieved: rgUnachieved.filter(({ strID }: SteamAchievement) => !ignored.has(strID)),
+    fnRenderAchievement: (achievement: SteamAchievement) => {
       return (
         <Focusable onClick={() => handleClick(achievement)} onOKButton={() => handleClick(achievement)}>
           {oldRenderAchievementFn(achievement)}

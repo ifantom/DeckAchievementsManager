@@ -2,15 +2,15 @@ import { createContext, Dispatch, ReactElement, SetStateAction, useState } from 
 import { AppAchievementsCounters, EMPTY_ACHIEVEMENTS_COUNTERS } from "../models";
 
 export const AchievementsPageContext = createContext({
-  counters: { ...EMPTY_ACHIEVEMENTS_COUNTERS },
-  setCounters: (() => {}) as Dispatch<SetStateAction<AppAchievementsCounters>>,
+  countersDiff: { ...EMPTY_ACHIEVEMENTS_COUNTERS },
+  setCountersDiff: (() => {}) as Dispatch<SetStateAction<AppAchievementsCounters>>,
 });
 
 export function AchievementsPageContextProvider(props: { children: ReactElement }) {
-  const [counters, setCounters] = useState({ ...EMPTY_ACHIEVEMENTS_COUNTERS });
+  const [countersDiff, setCountersDiff] = useState({ ...EMPTY_ACHIEVEMENTS_COUNTERS });
 
   return (
-    <AchievementsPageContext.Provider value={{ counters, setCounters }}>
+    <AchievementsPageContext.Provider value={{ countersDiff, setCountersDiff }}>
       {props.children}
     </AchievementsPageContext.Provider>
   );
