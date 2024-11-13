@@ -1,4 +1,4 @@
-# 🏆 Achievements Manager 
+# 🏆 Steam Deck Achievements Manager 
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://deckbrew.xyz/discord)
 
 Get control over your achievements

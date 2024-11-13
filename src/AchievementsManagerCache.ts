@@ -58,8 +58,6 @@ export default class AchievementsManagerCache {
   public async saveIgnored(): Promise<void> {
     const ignoredTuples = [...this._ignored].map(([key, value]) => [key, [...value]]);
 
-    console.log(this._ignored, ignoredTuples);
-
     await localforage.setItem("ignored", ignoredTuples);
   }
 

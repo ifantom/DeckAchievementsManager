@@ -9,6 +9,7 @@ export const Achievements: IAchievements = findModuleChild((module) => {
 });
 
 interface IAchievements {
+  LoadMyAchievements: (appId: number) => Promise<void>;
   m_mapMyAchievements: Map<number | string, SteamAchievementsCache>;
   __proto__: unknown;
 }

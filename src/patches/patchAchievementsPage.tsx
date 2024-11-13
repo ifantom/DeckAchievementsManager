@@ -6,12 +6,13 @@ import AchievementsListWrapper from "../components/achievementsListWrapper";
 import IgnoredAchievementsListWrapper from "../components/ignoredAchievementsListWrapper";
 import { AchievementsPageContextProvider } from "../components/achievementsPageContextProvider";
 import AchievementsManagerCache from "../AchievementsManagerCache";
+import { RouteProps } from "react-router";
 
 declare global {
   let navigation: { currentEntry: { url: string } };
 }
 
-class ManualRouter {
+class UrlMatcher {
   static get match() {
     const id = navigation.currentEntry.url.match(/app\/(\d+)\//)?.[1];
 
@@ -20,46 +21,55 @@ class ManualRouter {
 }
 
 export default function patchAchievementsPage(cache: AchievementsManagerCache) {
-  return routerHook.addPatch("/library/app/:appid/achievements", () => {
+  return routerHook.addPatch("/library/app/:appid/achievements", (props) => {
     // @ts-ignore
-    const childrenFn: Function = (routerHook.toReplace as Map<string, unknown>).get("/library/app/:appid/achievements");
-    const childrenEl = createElement(childrenFn.bind(undefined, ManualRouter), {});
+    const toReplace = routerHook.toReplace as Map<string, Function>;
+    if (!toReplace) return props;
 
-    afterPatch(childrenEl, "type", (_, ret1) => {
-      const appId: number = ret1.props.appid;
+    const childrenFn = toReplace.get("/library/app/:appid/achievements");
+    if (typeof childrenFn !== "function") return props;
 
-      afterPatch(ret1, "type", (_, ret2: ReactElement) => {
-        const myAchievementsPage = ret2.props.children?.props.children?.[1]?.props.children?.props.children?.[0];
-        if (!myAchievementsPage) return ret2;
+    const childrenEl = createElement(childrenFn.bind(undefined, UrlMatcher), {});
 
-        afterPatch(myAchievementsPage.props.children, "type", (_, ret3: ReactElement) => {
-          if (!ret3.props.children) return ret3;
+    afterPatch(childrenEl, "type", (_, ret1?: ReactElement) => {
+      if (!ret1?.type) return ret1;
 
-          ret3.props.children[0].props.children = (
-            <AchievementsHeaderWrapper>{ret3.props.children[0].props.children}</AchievementsHeaderWrapper>
+      afterPatch(ret1, "type", (args, ret2?: ReactElement) => {
+        const appId: number = args[0]?.appid;
+        if (!appId) return ret2;
+
+        const myAchievementsPage = ret2?.props?.children?.props?.children?.[1]?.props?.children?.props?.children?.[0];
+        if (!myAchievementsPage?.props?.children?.type) return ret2;
+
+        afterPatch(myAchievementsPage.props.children, "type", (_, ret3?: ReactElement) => {
+          const headerContainer = ret3?.props?.children?.[0];
+          if (!headerContainer?.props?.children) return ret3;
+
+          const achievementsTabs = ret3?.props?.children?.[1]?.props?.children?.props?.tabs;
+          if (!achievementsTabs) return ret3;
+
+          const myAchievementsTab = achievementsTabs.find((tab: { id?: string }) => tab?.id === "achievements");
+          if (!myAchievementsTab?.content?.type) return ret3;
+
+          headerContainer.props.children = (
+            <AchievementsHeaderWrapper>{headerContainer.props.children}</AchievementsHeaderWrapper>
           );
-
-          const myAchievementsTab = ret3.props.children[1].props.children.props.tabs.find(
-            ({ id }: { id: string }) => id === "achievements",
-          );
-
-          if (!myAchievementsTab) {
-            return ret3;
-          }
 
           const ignoredAchievementsTab = {
             ...myAchievementsTab,
-            id: "all",
+            id: "ignored",
             title: "Ignored achievements",
             content: cloneElement(myAchievementsTab.content, {
               ...myAchievementsTab.content.props,
-              appid: `i${myAchievementsTab.content.props.appid}`,
+              appid: `i${appId}`,
             }),
           };
 
-          ret3.props.children[1].props.children.props.tabs.push(ignoredAchievementsTab);
+          achievementsTabs.push(ignoredAchievementsTab);
 
-          afterPatch(myAchievementsTab.content, "type", (_, ret4: ReactElement) => {
+          afterPatch(myAchievementsTab.content, "type", (_, ret4?: ReactElement) => {
+            if (!ret4?.props?.children) return ret4;
+
             ret4.props.children.splice(
               1,
               2,
@@ -71,7 +81,9 @@ export default function patchAchievementsPage(cache: AchievementsManagerCache) {
             return ret4;
           });
 
-          afterPatch(ignoredAchievementsTab.content, "type", (_, ret4: ReactElement) => {
+          afterPatch(ignoredAchievementsTab.content, "type", (_, ret4?: ReactElement) => {
+            if (!ret4?.props?.children) return ret4;
+
             ret4.props.children.splice(
               1,
               2,
@@ -92,6 +104,6 @@ export default function patchAchievementsPage(cache: AchievementsManagerCache) {
       return ret1;
     });
 
-    return { children: childrenEl };
+    return { ...props, children: childrenEl } as RouteProps;
   });
 }
